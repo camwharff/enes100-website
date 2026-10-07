@@ -33,6 +33,10 @@ As an ENES100 Laboratory Teaching Fellow, I proposed rebuilding the previous cou
 - **Deployment and analytics:** debugged and fixed the GitHub Actions deployment to GitHub Pages, and added Google Analytics.
 - **Ongoing maintenance:** semester-by-semester content updates (staff, schedules, applications, lab "spirit days"), bug fixes, and support for other teaching fellows who edited documentation pages.
 
+## Conference presentation
+ 
+The website and lab display were presented as part of the poster *"Strategies for Managing a High-Throughput Academic Makerspace"* at **ISAM 2025** (International Symposium on Academic Makerspaces). The lab display appears on the poster as the labs' digital signage. See the [VELMA README](https://github.com/camwharff/enes100-velma#conference-presentation) for the poster.
+
 ## Features
 
 | Area | Routes | Description |
