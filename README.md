@@ -1,114 +1,101 @@
-# Enes100 Website
+# ENES100 Course Website
 
-## Editing Pages
-If you are making a small edit (typo fix, adding a sentence, etc.), you can use the online GitHub editor. 
-If you are making a larger edit, you should clone the repository and run the website locally.
+**The public course website for ENES100: Introduction to Engineering Design at the University of Maryland**, rebuilt as a statically generated SvelteKit app. Hundreds of first-year engineering students and course staff used it every week for lab hours, hardware library documentation, and course tools.
 
-### Identify the correct file
-Find the page you are interested in editing. For example : enes100.umd.edu/documentation/faq
+> **Archived for my portfolio.** This repository is a frozen snapshot of the site as of December 2025, when I handed it off. The live site at [enes100.umd.edu](https://enes100.umd.edu) is still maintained by the ENES100 program and may have changed since then. The original repository is [umdenes100/enes100-website](https://github.com/umdenes100/enes100-website).
 
-Determine route part of the URL. This come after the first /.  (For our example: `/documentation/faq`)
+**Timeline:** Started July 2024 · Launched October 2024 · Maintained through December 2025
 
-Go to the src folder, then in there into the routes folder. Inside this folder, the routes are organized in a similar way to the URL.
+**Stack:** SvelteKit · TypeScript · Svelte 4 · Vite · GitHub Actions · GitHub Pages · Google Calendar API
 
-For our example, we would open the documentation folder, then the faq folder, then edit +page.svelte
+---
 
-*See here https://learn.svelte.dev/tutorial/pages for more information on how routing works.*
+## Overview
 
-### Edit the file
+ENES100 is UMD's first-year engineering design course. Every semester, hundreds of students build autonomous over-terrain vehicles (OTVs) and rely on the course website for:
 
-Many files have both HTML and markdown in them.
+- **Lab availability:** whether the two lab rooms are open, have a class in session, or are closed.
+- **Hardware library documentation** for the course's Arduino (C++) and MicroPython libraries, plus examples, a tank-platform guide, and FAQs.
+- **Course tools:** the simulator, vision system, machine learning, and tutorial video pages.
+- **Course information:** the instructional team, the student showcase, and teaching fellow applications.
 
-Markdown is within a special markdown tag. Anywhere between <MarkdownContent> and </MarkdownContent> is markdown.
+As an ENES100 Laboratory Teaching Fellow, I proposed rebuilding the previous course site and led the project from design through launch. I designed every page, first as graphic mockups and then as HTML/CSS prototypes. Then I built the site in Svelte together with a fellow teaching fellow who had SvelteKit experience. After launch I was its primary maintainer for more than a year, and before I left the role I trained a successor to take over maintenance and development.
 
-Example:
-```html
-<MarkdownContent>
-# This is markdown
-html in here will also be rendered as html, so you can mix and match.
-</MarkdownContent>
-this will be rendered as html
-<a href=""></a>
-```
+> **A note on the commit history:** much of the early build (August–September 2024) was pair-programmed on a teammate's laptop, so some of my code from that period is committed under his account.
 
-Add a <MarkdownContent> tag to the file to use markdown anywhere. Make sure it is imported with a 
-```
-<script>
-    import MarkdownContent from "$lib/MarkdownContent.svelte";
-</script>
-```
-(do not have two script tags, just place `import MarkdownContent from "$lib/MarkdownContent.svelte";` in the existing script tag if one exists)
+## My contributions
 
-Note: details / summary tags are dropdowns. You'll get a feel for this.
+- **Design:** the site's full visual identity, including typography, color palette, page layouts, and responsive layout rules. I took it from graphic mockups to HTML/CSS prototypes before we built it in Svelte.
+- **Designed and built the site's pages:** the home page, the About, Team, and Showcase pages, the FAQ and examples documentation, the ML page port, the course technology page, the tutorial videos page, the School Store page, and the teaching fellow application page. I also created the MicroPython documentation page, which other teaching fellows then filled in.
+- **Lab status system:** each lab room's weekly schedule is encoded as an hourly grid (7 days × 24 hours) that maps to `closed`, `class`, or `open`. On page load, the home page computes the current and next-hour status for each room. Because the status widget sits on the site's front page, we chose a hardcoded schedule grid over an API call. The status is computed instantly in the browser with no network request, no API key, and no dependency on an outside service, which keeps the most-visited page lightweight. Since the lab schedule changes only once a semester, updating the grid each term was a small cost. I built the original version and updated the schedules every semester.
+- **Lab display page (`/labDisplay`):** a full-screen page for a monitor in the lab. It shows a live clock and date, and it pulls current and upcoming staff shifts from a shared Google Calendar through the Google Calendar API.
+- **Responsive styling:** home page animations, plus styling that works for a public-facing landing page and for dense technical documentation. I also made every page work on mobile.
+- **Deployment and analytics:** debugged and fixed the GitHub Actions deployment to GitHub Pages, and added Google Analytics.
+- **Ongoing maintenance:** semester-by-semester content updates (staff, schedules, applications, lab "spirit days"), bug fixes, and support for other teaching fellows who edited documentation pages.
 
-### Save the file
+## Features
 
+| Area | Routes | Description |
+|---|---|---|
+| Home | `/` | Course landing page with live lab status for JMP 1116 and JMP 1120, plus quick links |
+| Lab display | `/labDisplay` | Wall-monitor view: live clock and current/upcoming staff shifts from Google Calendar |
+| Tools | `/tools/*` | Simulator, vision system, machine learning, model uploader, and tutorial videos |
+| Labs | `/labs/*` | Lab schedule, School Store, maintenance form, and tool check (embedded internal apps) |
+| Documentation | `/documentation/*` | Arduino and MicroPython library references, examples, tank library and guide, FAQ |
+| About | `/about/*` | Course overview, instructional team, student showcase, and teaching fellow applications |
 
-## Editing Interactive Pages
-You will need to know HTML, JS, and CSS to edit these pages. You can find the source code in the src/routes directory.
-The index page is an example of an interactive page - it interactively calculates the lab status.
+## Technical notes
 
-To edit these pages, you should be testing locally, because likely what you want to do won't work the first time.
+- **Static generation:** the site uses `@sveltejs/adapter-static` with `prerender = true`, so every route is built to plain HTML. GitHub Pages can host it with no server.
+- **Markdown inside Svelte:** a `MarkdownContent` component renders Markdown written directly inside `.svelte` files with [`marked`](https://github.com/markedjs/marked). Course staff with no web development experience could edit documentation pages, even from the GitHub web editor.
+- **Shared layouts:** `Header`, `Footer`, `SidebarLayout`, and `FullPageLayout` components keep navigation and styling consistent across sections. Global styles live in `src/lib/global.css`.
+- **Deployment:** `.github/workflows/deploy.yml` installs dependencies, builds to `build/`, and publishes with `actions/deploy-pages`.
 
-To run the website locally (like, on localhost and not enes100.umd.edu) you need Node.js and git installed, and a text editor.
-
-When developing this project, we used Node v22.3.0 and git 2.45.1. You can check your version by running `node -v` and `git -v` 
-in the terminal. ("Command Prompt" on Windows, "Terminal" on Mac, "Terminal" on Linux). If those commands fail with something
-along the lines of "node is not recognized as an internal or external command", you need to install Node.js and/or git.
-
-Clone the repository. (If you don't know how to do this look it up.)
-
-Navigate to the repository in the terminal. (If you don't know how to do this look it up.)
-
-Run `npm install` to install the dependencies.
-
-Run `npm run dev` to start the development server. You will see something like
+## Project structure
 
 ```
-VITE v4.5.3  ready in 1605 ms
-
-➜  Local:   http://localhost:5173/
-➜  Network: use --host to expose
-➜  press h to show help
+src/
+├── app.html                 # HTML shell (includes analytics tag)
+├── lib/                     # Shared components and global styles
+│   ├── Header.svelte
+│   ├── Footer.svelte
+│   ├── MarkdownContent.svelte
+│   ├── SidebarLayout.svelte
+│   └── global.css
+└── routes/                  # File-based routing; folders mirror URLs
+    ├── +page.svelte         # Home page + lab status logic
+    ├── labDisplay/          # Lab wall-monitor display
+    ├── about/
+    ├── documentation/
+    ├── labs/
+    └── tools/
+static/
+├── img/                     # Images and Interstate font files
+└── cad/                     # Downloadable WiFi camera case CAD files
 ```
 
-Click on the link to open the website in your browser. You can now edit the files and see the changes as soon as you save the file.
-(Top tip - set up autosave in your editor so as soon as you open your browser it automatically reloads the page.)
+## Running locally
 
-Edit your page. Then, commit and push changes!
+Requires Node.js (developed on v22; CI builds with v18).
 
-## Adding a Markdown page
-Determine the route part of the URL. This comes after the first /. For example, `/documentation/faq`.
-
-Go to the src folder, then in there into the routes folder. Inside this folder, the routes are organized in a similar way to the URL.
-
-For our example, we would open the documentation folder, then the faq folder, then create a new file called +page.svelte
-
-Add the following code to the file:
-```html
-<script>
-    import MarkdownContent from "$lib/MarkdownContent.svelte";
-</script>
-
-<MarkdownContent>
-# This is markdown
-</MarkdownContent>
-```
-
-But mostly, look at other files and learn from them.
-
-## Adding an Interactive Page
-Same as markdown content page, but then just add your interactive content there.
-
-## Removing Pages
-Search for any references to the page in links and such. Remove them. Then delete the file and containing folder.
-
-(Example, to remove faq page you would remove the faq folder (including page.svelte in that folder).
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+git clone https://github.com/camwharff/enes100-website.git
+cd enes100-website
+npm install
+npm run dev        # http://localhost:5173
+npm run build      # static output in build/
 ```
+
+### Editing content (maintainer guide)
+
+This is the workflow I documented for the teaching fellows who maintained content:
+
+1. Find the page's route in the URL (for example, `/documentation/faq`).
+2. Open the matching folder under `src/routes/` and edit its `+page.svelte`.
+3. Anything inside `<MarkdownContent> … </MarkdownContent>` is Markdown. Anything outside it is HTML/Svelte.
+4. For a new page, create a folder with a `+page.svelte` that imports `MarkdownContent` from `$lib/MarkdownContent.svelte`.
+5. Commit and push to `master`. GitHub Actions deploys the change automatically.
+
+## Credits
+
+Built for the UMD Keystone Engineering Program's ENES100 course. **Forrest Milner** brought SvelteKit experience to the project. He set up the repository and the GitHub Pages deployment workflow, pair-programmed the initial Svelte build with me (including the shared header, footer, sidebar, and Markdown components), and wrote the ML model uploader. Other ENES100 teaching fellows contributed documentation and content updates, mainly to the MicroPython and machine learning pages.
